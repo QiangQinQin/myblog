@@ -18,6 +18,7 @@
 - 博客/标签对应表：博客id、标签的id
 - 标签表：标签id、标签名称（博客和标签：一对多：一个博客可以对应多个标签）
 - 类别表：类别ID、类别名称（博客和类别：一对一：一个博客对应一个类别）
+- 建表的sql语句：https://github.com/QiangQinQin/myblog/blob/master/table_sql.txt
 ## 博客涉及技术
 ### 服务端技术
 - 核心框架：Spring:4.1.0.RELEASE
