@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--注意命名空间-->
+<mapper namespace="com.tulun.dao.ArticleTagMapper">
+
+    <!--传入一个文章id，找到所有标签id，然后以List<Tag>形式返回所有的标签信息-->
+    <select id="getTagByArticalId" resultType="com.tulun.bean.Tag">
+        select tt.*
+        from t_article_tag ta,t_tag tt
+        where ta.tagId=tt.id and
+               ta.articleId=#{articleId}
+    </select>
+
+
+
+    <!--接口里用@Param传参数，且无返回值-->
+    <insert id="setArticleTag"  >
+        insert into t_article_tag(articleId, tagId) values (#{articleId},#{tagId});
+    </insert>
+
+
+</mapper>

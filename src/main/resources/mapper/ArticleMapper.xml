@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tulun.dao.ArticleMapper">
+
+    <resultMap id="articleMap" type="com.tulun.bean.Article">
+
+        <result property="id"     column="id"/>
+        <result property="categoryId"   column="categoryId"/>
+        <result property="title" column="title"/>
+        <!--通过resultMap类 指定 content属性的类型转换器-->
+        <result column="content" property="content" typeHandler="com.tulun.util.ConvertBlobTypeHandler"/>
+        <result property="description" column="description"/>
+        <result property="statue" column="statue"/>
+        <result property="author" column="author"/>
+        <result property="createTime" column="createTime"/>
+        <result property="showCount" column="showCount"/>
+        <result property="categoryName" column="categoryName"/>
+        <!--<result property="tagList" column="tagId"/>&lt;!&ndash;每个元素都是List[Tag]&ndash;&gt;-->
+
+        <!--time没写映射也没影响啊  <result property="tagList" column="tagList"/>  ??????????????-->
+        <!--<result property="tagname"   没用到，就不配置吧，查表能得到-->
+
+    </resultMap>
+    <insert id="addArticle" useGeneratedKeys="true"   keyProperty="id"   keyColumn="id"  parameterType="com.tulun.bean.Article" >
+          insert into t_article(categoryId,title,content,description,statue,author,createTime,showCount)
+                          values (#{categoryId},#{title},#{content},#{description},#{statue},#{author},#{createTime},#{showCount});
+    </insert>
+
+    <!--<insert id="setArticleTag" >-->
+        <!--insert into t_article_tag values (#{articleId},#{tagId});-->
+    <!--</insert>-->
+
+
+    <!--将组合查询完所需要的属性  映射到了  java类上,
+         这样使用 http://localhost:8080/article/1 展示文章详情时就有了分类名属性-->
+    <select id="getArticleById" parameterType="int" resultMap="articleMap">
+        select a.*,c.categoryName categoryName
+        from t_article  a,t_category c
+        where a.categoryId=c.id and a.id=#{id};
+
+-- 没用组合查询，在ArticleService里重新封装了所有博客的统一逻辑
+--                 select * from t_article where id=#{id}
+    </select>
+
+
+    <select id="getAllArticleByCategoryId" parameterType="Integer" resultMap="articleMap">
+--               select a.*,c.categoryName categoryName
+--               from t_article a,t_category c
+--               where a.categoryId=c.id and a.categoryId=#{categoryId}
+--               order by a.createTime desc;
+--
+                  select * from t_article where categoryId=#{categoryId} order by createTime desc
+    </select>
+
+    <select id="getAllArticle" resultMap="articleMap">
+--               select a.*,c.categoryName categoryName
+--               from t_article a,t_category c
+--               where a.categoryId=c.id
+--               order by a.createTime desc;
+
+                select * from t_article  order by createTime desc
+    </select>
+    
+    <update id="increShowCount"  parameterType="Integer">
+        UPDATE t_article
+        SET showCount=( showCount+1 )
+        WHERE id=#{id};
+    </update>
+
+
+
+    <!--  模糊查询符合要求的数据总个数-->
+                                       <!--参数是HashMap类型-->
+<!--   注释写到sql语句里可能会出错
+     联合查询    笛卡尔积的结果里筛选
+     mybatis中的动态sql   下面这几个参数可传可不传  ;   if test是OGNL表达式，返回true或false ; where下面第一行不能写注释
+     concat是mysql提供的一个函数，进行字符串的绑定
+       如果内查询返回的结果取非空值，则EXISTS子句返回TRUE，这一行可作为外查询的结果行，否则不能作为结果。
+       增加临时列，每行的列值是写在select后的数
+        -->
+
+    <select id="selectCountByArticle" parameterType="map" resultType="int">
+        select count(*)
+        from t_article ta
+        join t_category tc
+        on  ta.categoryId = tc.id
+        <where>
+            <if test="article.title != null">
+
+                and ta.title like concat('%', #{article.title}, '%')
+            </if>
+            <if test="article.categoryId != null and article.categoryId != 0">
+                and ta.categoryId = #{article.categoryId}
+            </if>
+            <if test="article.tagId != null and article.tagId != 0">
+                and exists (
+                            select 1
+                from t_article_tag tt
+                where tt.articleId = ta.id and
+                       tt.tagId = #{article.tagId})
+            </if>
+        </where>
+    </select>
+
+    <!--  分页 查询时符合要求的数据 -->
+    <select id="selectArticleByPager" parameterType="map" resultMap="articleMap">
+--         在数据库利用 DATE_FORMAT 进行时间处理  注意要单独写出来e，否则只是处理，但是没有传出去
+        select ta.id,ta.categoryId,tc.categoryName,ta.title,ta.content,ta.author,ta.createTime,DATE_FORMAT(ta.createTime,'%Y-%m-%d %H:%i:%s') as time,
+        ta.showCount,ta.statue
+        from t_article ta
+        join t_category tc
+        on  ta.categoryId = tc.id
+        <where>
+            <if test="article.title != null">
+                and ta.title like concat('%', #{article.title}, '%')
+            </if>
+            <if test="article.categoryId != null and article.categoryId != 0">
+                and ta.categoryId = #{article.categoryId}
+            </if>
+            <if test="article.tagId != null and article.tagId != 0">
+                and exists (
+                        select 1
+                        from t_article_tag tt
+                        where tt.articleId = ta.id
+                        and tt.tagId = #{article.tagId})
+            </if>
+
+        </where>
+
+        order by ta.createTime desc
+        limit #{start},#{limit}     -- 起始位置，要读的数据量！！！！！ 查完后，仅返回当前页需要的数据
+
+    </select>
+
+    <update id="updateStatue" parameterType="com.tulun.bean.Article">
+        update t_article set statue =#{statue} where  id = #{id}
+    </update>
+
+</mapper>
+

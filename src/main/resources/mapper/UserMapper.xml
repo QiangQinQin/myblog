@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper根标签 namespace，命令空间：保证命名空间唯一，一般是对应的mapper.接口的包全路径,按ctrl键能跳转过去-->
+
+
+<!--把数据库的manager表  映射成 java的user类
+    property是java类属性名   column是数据库属性名-->
+<mapper namespace="com.tulun.dao.UserMapper">
+    <resultMap id="UserMap" type="com.tulun.bean.User">
+        <result property="id"     column="id"/>
+        <result property="name"   column="userName"/>
+        <result property="passwd" column="password"/>
+    </resultMap>
+
+    <select id="getUserById" parameterType="int" resultMap="UserMap">
+        select * from  t_manager where id=#{id};
+    </select>
+
+    <select id="getUserByNameAndPwd" resultMap="UserMap">
+        select  * from t_manager where userName=#{name} and password=#{pwd};
+    </select>
+</mapper>
