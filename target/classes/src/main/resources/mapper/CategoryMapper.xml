@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tulun.dao.CategoryMapper">
+
+    <select id="getAllCategory" resultType="com.tulun.bean.Category">
+        select * from  t_category;
+    </select>
+
+    <!--当ArticleMapper.xml里没有通过联合查询获得name时-->
+    <select id="getCategoryById" resultType="com.tulun.bean.Category">
+        select  * from t_category where id=#{id}
+    </select>
+</mapper>
