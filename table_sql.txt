@@ -1,3 +1,6 @@
+登录
+mysql -u root -p123456
+
 创建数据库
 create database my_blog;
 
