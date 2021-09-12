@@ -13,7 +13,7 @@
 <table class="table table-striped table-bordered table-hover dataTables-example">
     <thead>
     <tr>
-        <%-- 子 页面--%>
+        <%--  子  页面--%>
         <th>Id</th>
         <th>标题</th>
         <th>栏目</th>

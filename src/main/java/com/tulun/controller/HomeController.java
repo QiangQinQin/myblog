@@ -40,15 +40,15 @@ public class HomeController {
     }
 
 //    加载首页内容（加载文章 子 页面）
-//   提交到home/index.jsp以后  通过js到了article/article_list.js,
-// 然后又跳转到HomeController层的lodPageAll
-//分页展示？？？？？？？？？？？？？？？？？？？？？？？
+//   上面提交到home/index.jsp以后  通过js到了article/article_list.js(里面id为99999999999时才分页显示,即没分页！！！),
+// 然后js里的ajax又跳转到HomeController层的lodPageAll，带上articleList参数返回到articlepager.jsp
     @RequestMapping("loadPageAll")
     public String loadAll(Model model){
         List<Article> allArticle=articleService.getAllArticle();//处理了时间和标签
         model.addAttribute("articleList",allArticle);//因为articlepager.jsp里要用到articleList
         return "home/articlepager";
     }
+
 
 
     ////按照类别进行加载(相当于父页面：标签 和 类别)
@@ -69,8 +69,6 @@ public class HomeController {
 
         return "home/articlepager1";//jsp
     }
-
-
 
     //加载 指定类别的 内容（子页面：文章内容）
     // home/articlepager1.jsp提交以后，js/category/article_list过来的

@@ -47,8 +47,8 @@ function loadArticleList(){
         type : "post",
         success  : function(data) {//处理成功后返回数据   展示在下面的页面上
         	//alert(data);
-            //dataList在articl_list.jsp里   data是/article/load传过来的
-            //意思似乎是 实现dataList的网页 是 传了data参数的html(即article_pager.jsp)
+            //dataList在articl_list.jsp里   data是/article/load传过来的,(data为即article_pager)
+            //意思似乎是 实现dataList的网页 是 传了data参数的html（即article_pager.jsp）
         	$("#dataList").html(data); //  js中$()   或jquery知识
 		}
     });
